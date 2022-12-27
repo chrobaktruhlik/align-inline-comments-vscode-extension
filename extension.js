@@ -21,14 +21,20 @@ function activate(context) {
 		if (activeTextEditor != undefined) {
 
 
-			let languageId = activeTextEditor.document.languageId;		// Get the identifier of the language associated with document in currently active editor.
-			let marker = languageCommentMarker[languageId];
-			
-			if (marker == undefined) {
-				vscode.window.showErrorMessage("File type '" + languageId + "' is not supported."); // Display error message box to the user
-				return;
-			}
+			let languageId = activeTextEditor.document.languageId;		// / / / Get the identifier of the language associated with document in currently active editor.
+			switch	(languageId) {
+				case "javascript":
+					break;
+				
+				case: "powershell":
+					break;
 
+				default:
+					vscode.window.showErrorMessage("File type '" + languageId + "' is not supported."); // Display error message box to the user
+					return;
+			}
+			
+			let marker = languageCommentMarker[languageId];
 	
 			// Get the comment information (position, content) of each line
 			let commentArr = []; // Line information cache array
