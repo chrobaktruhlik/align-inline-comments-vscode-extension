@@ -13,7 +13,7 @@ function activate(context) {
 
 	// The command has been defined in the package.json file.
 	// The commandId parameter must match the command field in package.json.
-	let disposable = vscode.commands.registerCommand('hello-world-extension.helloWorld', function () {
+	let disposable = vscode.commands.registerCommand('align-inline-comments.align', function () {
 		// The code you place here will be executed every time your command is executed.
 
 		const editor = vscode.window.activeTextEditor; // The currently active editor.
@@ -24,7 +24,7 @@ function activate(context) {
 			let commentArr = []; 								// An array of the range: position immediately after code and starting corner mark of the inline comment, used to delete all whitespaces between this. (To replace tabs with spaces.)
 			let maxCommentIndex = 0; // Index of inline comment at rightmost position after code.
 
-			for(let line = 0; line < editor.document.lineCount; line++) {	// For all document lines.
+			for(let line = 0; line < editor.document.lineCount; line++) {		// For all document lines.
 
 				let matchCode; 								// Match all characters on line with inline comment between start of line and corner mark of inline comment.
 				let curLineText = editor.document.lineAt(line).text; // The text content of the current line.

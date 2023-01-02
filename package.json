@@ -8,17 +8,26 @@
     "vscode": "^1.74.0"
   },
   "categories": [
-    "Other"
+    "Formatters"
   ],
   "activationEvents": [
-    "onCommand:hello-world-extension.helloWorld"
+    "onCommand:align-inline-comments.align"
   ],
   "main": "./extension.js",
   "contributes": {
-    "commands": [{
-      "command": "hello-world-extension.helloWorld",
-      "title": "Align inline comments"
-    }]
+    "commands": [
+      {
+        "command": "align-inline-comments.align",
+        "title": "Align Inline Comments"
+      }
+    ],
+    "menus": {
+      "editor/context": [{
+        "when": "resourceLangId == javascript || resourceLangId == powershell || resourceLangId == typescript",
+        "command": "align-inline-comments.align",
+        "group": "1_modification"
+      }]
+    }
   },
   "scripts": {
     "lint": "eslint .",
