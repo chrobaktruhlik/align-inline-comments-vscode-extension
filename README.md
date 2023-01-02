@@ -13,7 +13,7 @@ This extension align inline comments to the rightmost position. Align only inlin
 None
 
 ## License
-Licensed under the [MIT](https://github.com/microsoft/vscode-extension-samples/blob/main/LICENSE) License.
+Licensed under the [MIT](https://github.com/chrobaktruhlik/align-inline-comments-vscode-extension/blob/6e03ba97a5cbc2a7bc79ce6d6726155327499415/LICENSE) License.
 
 ## Resource code
 
