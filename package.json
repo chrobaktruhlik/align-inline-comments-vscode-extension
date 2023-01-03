@@ -1,9 +1,14 @@
 {
   "name": "align-inline-comments-extension",
-  "displayName": "Align inline comments",
+  "displayName": "Align Inline Comments",
   "description": "A tool for aligning the inline comments after code.",
   "version": "0.0.1",
   "publisher": "chrobaktruhlik",
+  "icon": "icon/icon.png",
+	"repository": {
+		"type": "git",
+		"url":"https://github.com/chrobaktruhlik/align-inline-comments-vscode-extension.git"
+	},
   "engines": {
     "vscode": "^1.74.0"
   },
