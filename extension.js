@@ -5,17 +5,18 @@
 const vscode = require("vscode"); // The module "vscode" contains the VS Code extensibility API.
 
 function smartExpandTabs(tabbedText, tabSize) {
-// Smart expand tabs to spaces.
+// Smart expand tabs to spaces like editor IDE. Return untabbed (expanded tabs to spaces) text.
+// param: 	String: context		String with tabs to expand
+//			Number: tabSize		Tab size in spaces
 
 	let offset;
 
 	while ((offset = tabbedText.indexOf("\t")) != -1) {
-		tabbedText = tabbedText.replace("\t", "@".repeat(tabSize - offset % tabSize));
+		tabbedText = tabbedText.replace("\t", " ".repeat(tabSize - offset % tabSize));
 	};
-//console.log(tabbedText)
+
 	return tabbedText;
 }
-
 
 
 // This method is called when your extension is activated. Extension is activated the very first time the command is executed.
@@ -27,7 +28,7 @@ function activate(context) {
 
 	// The command has been defined in the package.json file. The commandId parameter must match the command field in package.json.
 	let disposable = vscode.commands.registerCommand('align-inline-comments.align', function () {
-		// The code you place here will be executed every time your command is executed.
+	// The code you place here will be executed every time your command is executed.
 
 		const editor = vscode.window.activeTextEditor; // The currently active editor.
 
@@ -61,33 +62,28 @@ function activate(context) {
 				if (match != null) { // Only lines with inline comment after code.
 
 					let originalText = match[0];
-					let untabbedText = smartExpandTabs(matchText, tabSize);	// Smart expand all tabs.
+					let untabbedText = smartExpandTabs(originalText, tabSize);	// Smart expand all tabs.
 
 					maxCommentIndex = Math.max(maxCommentIndex, untabbedText.length); // Get rightmost position of inline comment.
 
-			//		let originalText = matchText[0].trimEnd();
-			//		let expandedText = originalText;
-			//		let offset;
-
-			//		while ((offset = expandedText.indexOf("\t")) != -1) {
-			//			expandedText = expandedText.replace("\t", " ".repeat(tabSize - offset % tabSize));
-			//		}
-
-					let start = new vscode.Position(line, originalText.length); // The position immediately after the code.
+					let start = new vscode.Position(line, originalText.trimEnd().length); // The position immediately after the code.
 					let end = new vscode.Position(line, originalText.length);			// Position of starting mark inline comment.
 					commentArr.push({
-						rangeToDelete: new vscode.Range(start, end),
-			//			tabExpand: expandedText.length - originalText.length
+						rangeToDelete: new vscode.Range(start, end),						// Range to be deleted (whitespaces).
+						tabExpandedSpaces: untabbedText.trimEnd().length - originalText.trimEnd().length	// How many spaces are added to the text in code in the editor current view.
 					});
 				};
 			};
 
-			//editor.edit((TextEditorEdit) => {
-			//	commentArr.forEach(el => {
-			//		TextEditorEdit.delete(el.range); // Delete all whitespaces between last code character and inline comment.
-			//		TextEditorEdit.insert(el.range.start, " ".repeat(maxCommentIndex - el.range.start.character - el.tabExpand)); // Insert spaces after code before inline comment.
-			//	})
-			//});	
+			editor.edit((TextEditorEdit) => {
+				commentArr.forEach(el => {
+					TextEditorEdit.delete(el.rangeToDelete); // Delete all whitespaces after last code character and inline comment.
+					TextEditorEdit.insert(	// Insert spaces after code and before inline comment.
+						el.rangeToDelete.start, // Start position
+						" ".repeat(maxCommentIndex - el.rangeToDelete.start.character - el.tabExpandedSpaces) // The number of inserted spaces.
+					); 
+				})
+			});	
 			
 		};
 	
