@@ -4,6 +4,20 @@
 
 const vscode = require("vscode"); // The module "vscode" contains the VS Code extensibility API.
 
+function smartExpandTabs(tabbedText, tabSize) {
+// Smart expand tabs to spaces.
+
+	let offset;
+
+	while ((offset = tabbedText.indexOf("\t")) != -1) {
+		tabbedText = tabbedText.replace("\t", "@".repeat(tabSize - offset % tabSize));
+	};
+//console.log(tabbedText)
+	return tabbedText;
+}
+
+
+
 // This method is called when your extension is activated. Extension is activated the very first time the command is executed.
 function activate(context) {
 // param: {vscode.ExtensionContext} context
@@ -11,8 +25,7 @@ function activate(context) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error). This line of code will only be executed once when your extension is activated.
 	// console.log("Extension is now active!");
 
-	// The command has been defined in the package.json file.
-	// The commandId parameter must match the command field in package.json.
+	// The command has been defined in the package.json file. The commandId parameter must match the command field in package.json.
 	let disposable = vscode.commands.registerCommand('align-inline-comments.align', function () {
 		// The code you place here will be executed every time your command is executed.
 
@@ -28,13 +41,13 @@ function activate(context) {
 
 			for(let line = 0; line < editor.document.lineCount; line++) {		// For all document lines.
 
-				let matchText; 								// Match all characters on line with inline comment between start of line and corner mark of inline comment.
+				let match; 								// Match all characters on line with inline comment between start of line and corner mark of inline comment.
 				let curLineText = editor.document.lineAt(line).text; // The text content of the current line.
 
 				switch	(languageId) {
 					case "javascript":
 					case "typescript":
-						matchText = curLineText.match(/^(?!\s*\/{2}).*?(?<!:)(?=\/{2})/);
+						match = curLineText.match(/^(?!\s*\/{2}).*?(?<!:)(?=\/{2})/);
 						break;
 				
 					case "powershell":
@@ -44,33 +57,37 @@ function activate(context) {
 						vscode.window.showErrorMessage("File type '" + languageId + "' is not supported."); // Display error message box to the user.
 						return;
 				};
-			
-				if (matchText != null) { // Only lines with inline comment after code.
-					
-					let originalText = matchText[0].trimEnd();
-					let expandedText = originalText;
-					let offset;
 
-					while ((offset = expandedText.indexOf("\t")) != -1) {
-						expandedText = expandedText.replace("\t", " ".repeat(tabSize - offset % tabSize));
-					}
+				if (match != null) { // Only lines with inline comment after code.
+
+					let originalText = match[0];
+					let untabbedText = smartExpandTabs(matchText, tabSize);	// Smart expand all tabs.
+
+					maxCommentIndex = Math.max(maxCommentIndex, untabbedText.length); // Get rightmost position of inline comment.
+
+			//		let originalText = matchText[0].trimEnd();
+			//		let expandedText = originalText;
+			//		let offset;
+
+			//		while ((offset = expandedText.indexOf("\t")) != -1) {
+			//			expandedText = expandedText.replace("\t", " ".repeat(tabSize - offset % tabSize));
+			//		}
 
 					let start = new vscode.Position(line, originalText.length); // The position immediately after the code.
-					let end = new vscode.Position(line, matchText[0].length);			// Position of starting mark inline comment.
+					let end = new vscode.Position(line, originalText.length);			// Position of starting mark inline comment.
 					commentArr.push({
-						range: new vscode.Range(start, end),
-						tabExpand: expandedText.length - originalText.length
+						rangeToDelete: new vscode.Range(start, end),
+			//			tabExpand: expandedText.length - originalText.length
 					});
-					maxCommentIndex = Math.max(maxCommentIndex, matchText[0].length); // Get rightmost position of inline comment.
 				};
 			};
 
-			editor.edit((TextEditorEdit) => {
-				commentArr.forEach(el => {
-					TextEditorEdit.delete(el.range); // Delete all whitespaces between last code character and inline comment.
-					TextEditorEdit.insert(el.range.start, " ".repeat(maxCommentIndex - el.range.start.character - el.tabExpand)); // Insert spaces after code before inline comment.
-				})
-			});	
+			//editor.edit((TextEditorEdit) => {
+			//	commentArr.forEach(el => {
+			//		TextEditorEdit.delete(el.range); // Delete all whitespaces between last code character and inline comment.
+			//		TextEditorEdit.insert(el.range.start, " ".repeat(maxCommentIndex - el.range.start.character - el.tabExpand)); // Insert spaces after code before inline comment.
+			//	})
+			//});	
 			
 		};
 	
