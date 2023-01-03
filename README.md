@@ -1,7 +1,7 @@
 # Align Inline Comments
 A Visual Studio Code extension for aligning the inline trailing comments after code.
 
-This extension align inline comments to the rightmost position. Align only inline comments placed after code. Inline comments standing alone on a line will not align.
+This extension align inline comments to the rightmost position. Align only inline comments placed after code. Inline comments standing alone on a line will not align. The space between the code and the inline comment is filled/replaced with spaces.
 
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/chrobaktruhlik/align-inline-comments-vscode-extension/blob/6e03ba97a5cbc2a7bc79ce6d6726155327499415/LICENSE)
