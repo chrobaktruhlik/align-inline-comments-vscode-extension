@@ -21,18 +21,20 @@ function activate(context) {
 		if (editor != undefined) {
 
 			let languageId = editor.document.languageId;		// Get the identifier of the language associated with document in currently active editor.
+			let tabSize = Number(editor.options.tabSize);				// Get the size in spaces a tab takes.
+					
 			let commentArr = []; 								// An array of the range: position immediately after code and starting corner mark of the inline comment, used to delete all whitespaces between this. (To replace tabs with spaces.)
 			let maxCommentIndex = 0; // Index of inline comment at rightmost position after code.
 
 			for(let line = 0; line < editor.document.lineCount; line++) {		// For all document lines.
 
-				let matchCode; 								// Match all characters on line with inline comment between start of line and corner mark of inline comment.
+				let matchText; 								// Match all characters on line with inline comment between start of line and corner mark of inline comment.
 				let curLineText = editor.document.lineAt(line).text; // The text content of the current line.
 
 				switch	(languageId) {
 					case "javascript":
 					case "typescript":
-						matchCode = curLineText.match(/^(?!\s*\/{2}).*?(?<!:)(?=\/{2})/);
+						matchText = curLineText.match(/^(?!\s*\/{2}).*?(?<!:)(?=\/{2})/);
 						break;
 				
 					case "powershell":
@@ -43,18 +45,30 @@ function activate(context) {
 						return;
 				};
 			
-				if (matchCode != null) { // Only lines with inline comment after code.
-					let start = new vscode.Position(line, matchCode[0].trimEnd().length); // The position immediately after the code.
-					let end = new vscode.Position(line, matchCode[0].length);			// Position of starting mark inline comment.
-					commentArr.push(new vscode.Range(start, end));
-					maxCommentIndex = Math.max(maxCommentIndex, matchCode[0].length); // Get rightmost position.
+				if (matchText != null) { // Only lines with inline comment after code.
+					
+					let originalText = matchText[0].trimEnd();
+					let expandedText = originalText;
+					let offset;
+
+					while ((offset = expandedText.indexOf("\t")) != -1) {
+						expandedText = expandedText.replace("\t", " ".repeat(tabSize - offset % tabSize));
+					}
+
+					let start = new vscode.Position(line, originalText.length); // The position immediately after the code.
+					let end = new vscode.Position(line, matchText[0].length);			// Position of starting mark inline comment.
+					commentArr.push({
+						range: new vscode.Range(start, end),
+						tabExpand: expandedText.length - originalText.length
+					});
+					maxCommentIndex = Math.max(maxCommentIndex, matchText[0].length); // Get rightmost position of inline comment.
 				};
 			};
 
 			editor.edit((TextEditorEdit) => {
-				commentArr.forEach(element => {
-					TextEditorEdit.delete(element); // Delete all whitespaces between last code character and inline comment.
-					TextEditorEdit.insert(element.start, "x".repeat(maxCommentIndex - element.start.character)); // Insert spaces after code before inline comment.
+				commentArr.forEach(el => {
+					TextEditorEdit.delete(el.range); // Delete all whitespaces between last code character and inline comment.
+					TextEditorEdit.insert(el.range.start, " ".repeat(maxCommentIndex - el.range.start.character - el.tabExpand)); // Insert spaces after code before inline comment.
 				})
 			});	
 			
