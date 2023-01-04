@@ -19,8 +19,8 @@ function smartExpandTabs(tabbedText, tabSize) {
 }
 
 
-// This method is called when your extension is activated. Extension is activated the very first time the command is executed.
 function activate(context) {
+// This method is called when your extension is activated. Extension is activated the very first time the command is executed.
 // param: {vscode.ExtensionContext} context
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error). This line of code will only be executed once when your extension is activated.
@@ -62,7 +62,7 @@ function activate(context) {
 
 				if (match != null) {                                                                          // Only lines with inline comment after code.
 
-					let originalText = match[0];                                                              // Get line code text
+					let originalText = match[0];                                                              // Get code text
 					let untabbedText = smartExpandTabs(originalText, tabSize);                                // Smart expand all tabs.
 
 					maxCommentIndex = Math.max(maxCommentIndex, untabbedText.length);                         // Get rightmost position of inline comment.
