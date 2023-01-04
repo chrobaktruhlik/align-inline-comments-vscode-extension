@@ -1,0 +1,9 @@
+(["'])(?:(?=(\\?))\2.)*?\1
+
+(["'])		capture group of single or double quotes
+(?:(?=(\\?))\2.)	Non-capturing group of (?=(\\?))\2.
+(?=(\\?))		Positive lookahead of (\\?)
+\2			Backreference to \\?
+.			Matches any character different from line breaks
+*?			Non-greedy operator of (?:(?=(\\?))\2.)
+\1			Backreference to ["']
