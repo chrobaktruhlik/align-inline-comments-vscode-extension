@@ -52,6 +52,7 @@ function activate(context) {
 						break;
 				
 					case "powershell":
+						match = curLineText.match(/^(?!\s*#).*?(?=#)/);
 						break;
 
 					default:
