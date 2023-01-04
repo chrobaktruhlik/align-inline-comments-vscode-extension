@@ -2,20 +2,20 @@
 // This extension align inline comments to the rightmost position.
 // Align only inline comments placed after code. Inline comments standing alone on a line will not align.
 
-const vscode = require("vscode"); // The module "vscode" contains the VS Code extensibility API.
+const vscode = require("vscode");                                                                             // The module "vscode" contains the VS Code extensibility API.
 
 function smartExpandTabs(tabbedText, tabSize) {
 // Smart expand tabs to spaces like editor IDE. Return untabbed (expanded tabs to spaces) text.
 // param: 	String: context		String with tabs to expand
 //			Number: tabSize		Tab size in spaces
 
-	let offset;
+	let offset;                                                                                               // Tab '\t' position in input string.
 
-	while ((offset = tabbedText.indexOf("\t")) != -1) {
-		tabbedText = tabbedText.replace("\t", " ".repeat(tabSize - offset % tabSize));
+	while ((offset = tabbedText.indexOf("\t")) != -1) {                                                       // Iterate all tabs.
+		tabbedText = tabbedText.replace("\t", " ".repeat(tabSize - offset % tabSize));                        // Smart replace tab with spaces.
 	};
 
-	return tabbedText;
+	return tabbedText;                                                                                        // Return tab expanded to spaces text.
 }
 
 
@@ -30,20 +30,20 @@ function activate(context) {
 	let disposable = vscode.commands.registerCommand('align-inline-comments.align', function () {
 	// The code you place here will be executed every time your command is executed.
 
-		const editor = vscode.window.activeTextEditor; // The currently active editor.
+		const editor = vscode.window.activeTextEditor;                                                        // The currently active editor.
 
 		if (editor != undefined) {
 
-			let languageId = editor.document.languageId;		// Get the identifier of the language associated with document in currently active editor.
-			let tabSize = Number(editor.options.tabSize);				// Get the size in spaces a tab takes.
+			let languageId = editor.document.languageId;                                                      // Get the identifier of the language associated with document in currently active editor.
+			let tabSize = Number(editor.options.tabSize);                                                     // Get the size in spaces a tab takes.
 					
-			let commentArr = []; 								// An array of the range: position immediately after code and starting corner mark of the inline comment, used to delete all whitespaces between this. (To replace tabs with spaces.)
-			let maxCommentIndex = 0; // Index of inline comment at rightmost position after code.
+			let commentArr = [];                                                                              // An array of the range: position immediately after code and starting corner mark of the inline comment, used to delete all whitespaces between this. (To replace tabs with spaces.)
+			let maxCommentIndex = 0;                                                                          // Index of inline comment at rightmost position after code.
 
-			for(let line = 0; line < editor.document.lineCount; line++) {		// For all document lines.
+			for(let line = 0; line < editor.document.lineCount; line++) {                                     // For all document lines.
 
-				let match; 								// Match all characters on line with inline comment between start of line and corner mark of inline comment.
-				let curLineText = editor.document.lineAt(line).text; // The text content of the current line.
+				let match;                                                                                    // Match all characters on line with inline comment between start of line and corner mark of inline comment.
+				let curLineText = editor.document.lineAt(line).text;                                          // The text content of the current line.
 
 				switch	(languageId) {
 					case "javascript":
@@ -55,31 +55,31 @@ function activate(context) {
 						break;
 
 					default:
-						vscode.window.showErrorMessage("File type '" + languageId + "' is not supported."); // Display error message box to the user.
+						vscode.window.showErrorMessage("File type '" + languageId + "' is not supported.");   // Display error message box to the user.
 						return;
 				};
 
-				if (match != null) { // Only lines with inline comment after code.
+				if (match != null) {                                                                          // Only lines with inline comment after code.
 
-					let originalText = match[0];
-					let untabbedText = smartExpandTabs(originalText, tabSize);	// Smart expand all tabs.
+					let originalText = match[0];                                                              // Get line code text
+					let untabbedText = smartExpandTabs(originalText, tabSize);                                // Smart expand all tabs.
 
-					maxCommentIndex = Math.max(maxCommentIndex, untabbedText.length); // Get rightmost position of inline comment.
+					maxCommentIndex = Math.max(maxCommentIndex, untabbedText.length);                         // Get rightmost position of inline comment.
 
-					let start = new vscode.Position(line, originalText.trimEnd().length); // The position immediately after the code.
-					let end = new vscode.Position(line, originalText.length);			// Position of starting mark inline comment.
+					let start = new vscode.Position(line, originalText.trimEnd().length);                     // The position immediately after the code.
+					let end = new vscode.Position(line, originalText.length);                                 // Position of starting mark inline comment.
 					commentArr.push({
-						rangeToDelete: new vscode.Range(start, end),						// Range to be deleted (whitespaces).
-						tabExpandedSpaces: untabbedText.trimEnd().length - originalText.trimEnd().length	// How many spaces are added to the text in code in the editor current view.
+						rangeToDelete: new vscode.Range(start, end),                                          // Range to be deleted (whitespaces).
+						tabExpandedSpaces: untabbedText.trimEnd().length - originalText.trimEnd().length      // How many spaces are added to the text in code in the editor current view.
 					});
 				};
 			};
 
 			editor.edit((TextEditorEdit) => {
 				commentArr.forEach(el => {
-					TextEditorEdit.delete(el.rangeToDelete); // Delete all whitespaces after last code character and inline comment.
-					TextEditorEdit.insert(	// Insert spaces after code and before inline comment.
-						el.rangeToDelete.start, // Start position
+					TextEditorEdit.delete(el.rangeToDelete);                                                  // Delete all whitespaces after last code character and inline comment.
+					TextEditorEdit.insert(                                                                    // Insert spaces after code and before inline comment.
+						el.rangeToDelete.start,                                                               // Start position
 						" ".repeat(maxCommentIndex - el.rangeToDelete.start.character - el.tabExpandedSpaces) // The number of inserted spaces.
 					); 
 				})
