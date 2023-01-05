@@ -43,7 +43,7 @@ function activate(context) {
 			for(let line = 0; line < editor.document.lineCount; line++) {                                     // For all document lines.
 
 				let match;                                                                                    // Match all characters on line with inline comment between start of line and corner mark of inline comment.
-				let curLineText = editor.document.lineAt(line).text;                // The text content of the current line in the editor.
+				let curLineText = editor.document.lineAt(line).text;                                          // The text content of the current line in the editor.
 
 				// 1. Replace all string literals with NUL characters -> Clear flags of fake inline comments in strings.
 				// 2. Match all characters from start of line to first inline comment after code.
