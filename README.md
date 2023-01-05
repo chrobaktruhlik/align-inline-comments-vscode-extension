@@ -5,8 +5,8 @@ td, th {
 </style>
 <table>
     <tr>
-        <td style="xheight:50px;">
-            <img src="icon/icon.png" style="xheight:100%;">
+        <td>
+            <img src="https://github.com/chrobaktruhlik/align-inline-comments-vscode-extension/icon/icon.png">
         </td>
         <td>
             <h1>Align Inline Comments</h1>
@@ -24,7 +24,7 @@ This extension aligns inline comments to the rightmost position. It only aligns 
 ## Usage
 In editor, right-click mouse on supported file type to open Context Menu and then select **Align Inline Comments** command from modification group or open Command Palette a then type **Align Inline Comments**.
 
-## Supported file type / languageID
+## Supported file type / language ID
 * javascript
 * powershell
 * typescript
