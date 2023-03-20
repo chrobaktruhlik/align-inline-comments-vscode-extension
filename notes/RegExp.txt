@@ -1,0 +1,9 @@
+(["'])(?:(?=(\\?))\2.)*?\1
+
+(["'])		        capture group of single or double quotes
+(?:(?=(\\?))\2.)	Non-capturing group of (?=(\\?))\2.
+(?=(\\?))		    Positive lookahead of escape character (\\?)
+\2			        Backreference to \\?
+.			        Matches any character different from line breaks -> alebo [\s\S] a ide to aj cez riadky
+*?			        Non-greedy operator of (?:(?=(\\?))\2.)
+\1			        Backreference to ["']
